@@ -1,0 +1,48 @@
+name: Deploy project Pages
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'build-support/build-pages.mjs', 'build-support/release-tools.mjs', '.github/workflows/pages.yml']
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+# Releases published or removed by hand redeploy through pages-on-release.yml;
+# the release workflow calls this one itself.
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Newest published release, pre-releases included
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mkdir -p build/release
+          gh api "repos/$GH_REPO/releases?per_page=30" > build/release/releases.json
+      - run: node build-support/build-pages.mjs build build/release/releases.json
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: build/pages
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        id: deploy

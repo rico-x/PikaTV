@@ -1,0 +1,55 @@
+name: CodeQL analysis
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '31 6 * * 2'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  analyze:
+    name: Analyze ${{ matrix.language }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: java-kotlin
+            build_mode: manual
+          - language: javascript-typescript
+            build_mode: none
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        if: matrix.language == 'java-kotlin'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
+        if: matrix.language == 'java-kotlin'
+      - name: Install SDK
+        if: matrix.language == 'java-kotlin'
+        run: bash build-support/install-sdk.sh 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build_mode }}
+          queries: security-extended
+      - name: Build Kotlin application for analysis
+        if: matrix.language == 'java-kotlin'
+        run: ./gradlew :app:assembleDebug --no-daemon --max-workers=2 --no-watch-fs --console=plain
+      - uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4
+        with:
+          category: /language:${{ matrix.language }}

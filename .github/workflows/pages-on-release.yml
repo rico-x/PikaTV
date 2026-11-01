@@ -1,0 +1,20 @@
+name: Redeploy Pages after a release change
+# Releases published or removed by hand. Kept apart from pages.yml: the release
+# workflow calls that one, and a called workflow may not hold actions: write.
+on:
+  release:
+    types: [published, edited, deleted, unpublished]
+permissions:
+  contents: read
+jobs:
+  redeploy-from-main:
+    # Release events run on the tag, but only main may deploy Pages.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run pages.yml --ref main

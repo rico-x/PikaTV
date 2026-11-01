@@ -1,0 +1,163 @@
+{
+  "appVersion": "0.4.3",
+  "capturedOn": "2026-11-01",
+  "session": "guest",
+  "images": [
+    {
+      "file": "comments-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "a17d9223014b644168d1121b3a73bf2420df9360085e07f5d3856bce2fb2a93f",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14482332",
+        "title": "Как оборониться от пикабушника",
+        "author": "Squama911"
+      }
+    },
+    {
+      "file": "feed-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "b1d82c5a3c3cfc320be4669a1e1c79a7e50b93c833d1d9d095a02ad82b3a8659",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14481803",
+        "title": "Мяско вкусное)))",
+        "author": "PreveD2RazA"
+      }
+    },
+    {
+      "file": "feed-light.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "30b343f7ba0a5a7b65f0f7fe60879fb5fc7924c4d64a28160677c2551b4c7a37",
+      "theme": "Светлая",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14481803",
+        "title": "Мяско вкусное)))",
+        "author": "PreveD2RazA"
+      }
+    },
+    {
+      "file": "image-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "8e03af6af71e2eb37a0aadb82099cae7c68390e1d3f3f4f4c5cf6ff829b7d4a9",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14481803",
+        "title": "Мяско вкусное)))",
+        "author": "PreveD2RazA"
+      }
+    },
+    {
+      "file": "login-light.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "9d70550b6e80c41199038b59f6ffd8bf0a8a20bbf58161daea40952b5de2d855",
+      "theme": "Светлая",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": null
+    },
+    {
+      "file": "menu-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "328e59188bd7dace45db76030721735d840cc9af9af371c535cfb5fe6c2f6c99",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14481803",
+        "title": "Мяско вкусное)))",
+        "author": "PreveD2RazA"
+      }
+    },
+    {
+      "file": "player-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "244cc53378273a2544526b8e2fd3ed9c710de10c09b0380fd25bb7646ef7d2e4",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14482332",
+        "title": "Как оборониться от пикабушника",
+        "author": "Squama911"
+      }
+    },
+    {
+      "file": "reactions-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "54a1e2b01b151f0b9eac75bfb1457c1e1b11db51a686dc2949e28482c7934ce2",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14481803",
+        "title": "Мяско вкусное)))",
+        "author": "PreveD2RazA"
+      }
+    },
+    {
+      "file": "reader-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "cfd136646ec1822491ea16bf92768ea8af252bdd0ed5744dc6f30adc53895a64",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14481803",
+        "title": "Мяско вкусное)))",
+        "author": "PreveD2RazA"
+      }
+    },
+    {
+      "file": "settings-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "109181f4abae2d04ea94925a376d08a3e16def95f87b837af10d73150adc28d4",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": null
+    },
+    {
+      "file": "settings-light.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "2551463a30bc0ce437b2a48a487594d3d433033520745649cd583c3fcbe937d9",
+      "theme": "Светлая",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": null
+    },
+    {
+      "file": "video-post-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "78f32987d3a21349abf7518119ac3e833d7484f51a5f9ef4f98a9266b82419ab",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": {
+        "url": "https://pikabu.ru/story/_14482332",
+        "title": "Как оборониться от пикабушника",
+        "author": "Squama911"
+      }
+    }
+  ]
+}

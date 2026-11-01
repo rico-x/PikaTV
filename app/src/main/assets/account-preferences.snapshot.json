@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "sitePreferences": {
+    "isUsedScrollMode": true,
+    "isFullStoryView": false,
+    "isAdultVisible": false,
+    "isHorrorVisible": true,
+    "isTagsAtTop": false,
+    "tagsFoldMode": 0,
+    "isVideoAutoplayMode": false,
+    "defaultCommentsViewMode": 3,
+    "maxCommentsBranchDepth": 0,
+    "isAnimPreviewComment": true
+  }
+}

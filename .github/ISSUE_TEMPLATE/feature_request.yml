@@ -1,0 +1,25 @@
+name: Предложение
+description: Улучшение чтения или управления с пульта
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Не включайте секреты и личные данные. Описанные здесь идеи ещё не являются возможностями приложения.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какую задачу зрителя нужно решить
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Как должно работать с обычного пульта
+      description: Опишите действия стрелками, OK и Back и ожидаемый результат.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Область и примеры
+      description: Какие экраны затрагиваются; меняет ли действие данные аккаунта на сайте. Приложите только публичные примеры.
