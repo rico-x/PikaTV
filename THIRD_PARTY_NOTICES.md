@@ -33,9 +33,7 @@
 
 ## Pikabu Return Minus
 
-Формат рейтингов и некоторые настройки Pikabu изучены по [Pikabu Return Minus](https://github.com/PyXiion/Pikabu-Return-Minus), версия 0.16.3, commit `c08c86c809109c6bdc14a43531d3693cdb9fc91b`. Сохранён [текст MIT с Copyright © 2023 PyXiion](licenses/Pikabu-Return-Minus-MIT.txt). Сохранена атрибуция исходного проекта.
-
-`GM_config.js` исследовался как библиотека настроек userscript, но не включён в приложение. Хранилище Tampermonkey и внешние сервисы RPM/Gollum не являются runtime-компонентами PikaTV.
+Источник сведений о формате рейтингов и настройках Pikabu — [Pikabu Return Minus](https://github.com/PyXiion/Pikabu-Return-Minus), версия 0.16.3, commit `c08c86c809109c6bdc14a43531d3693cdb9fc91b`. Сохранён [текст MIT с Copyright © 2023 PyXiion](licenses/Pikabu-Return-Minus-MIT.txt) и атрибуция исходного проекта.
 
 ## Инструментарий и тесты
 
