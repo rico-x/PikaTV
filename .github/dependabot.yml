@@ -5,7 +5,6 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 3
     groups:
       actions:
         patterns: ['*']
@@ -17,7 +16,6 @@ updates:
       day: monday
       time: '06:00'
       timezone: Europe/Moscow
-    open-pull-requests-limit: 10
     # Keep version-coupled families together; leave major migrations separate.
     groups:
       kotlin-toolchain:
