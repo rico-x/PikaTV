@@ -1,9 +1,9 @@
 {
-  "appVersion": "0.4.3",
-  "appVersionCode": 14,
+  "appVersion": "0.4.4",
+  "appVersionCode": 15,
   "configuration": "releaseRuntimeClasspath",
   "scope": "Resolved runtime artifacts before R8; not a complete post-shrink APK SBOM or build/test dependency inventory.",
-  "generatedOn": "2026-11-01",
+  "generatedOn": "2026-11-02",
   "additionalEmbeddedData": [
     {
       "name": "Public Suffix List (OkHttp 4.12.0)",
@@ -1806,27 +1806,9 @@
     {
       "group": "com.google.guava",
       "artifact": "failureaccess",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "artifactType": "jar",
-      "artifactSha256": "8a8f81cf9b359e3f6dfa691a1e776985c061ef2f223c9b2c80753e1b458e8064",
-      "licenseSpdx": [
-        "Apache-2.0"
-      ],
-      "licenseMetadata": [
-        {
-          "name": "The Apache Software License, Version 2.0",
-          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        }
-      ],
-      "licensePomCoordinate": "com.google.guava:guava-parent:26.0-android",
-      "embeddedNoticeFiles": []
-    },
-    {
-      "group": "com.google.guava",
-      "artifact": "guava",
-      "version": "33.3.1-android",
-      "artifactType": "jar",
-      "artifactSha256": "2c3e41d1b380f2044d257947a3aa82dabf3ae4b978622745254aa18b6cf89ab0",
+      "artifactSha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
       "licenseSpdx": [
         "Apache-2.0"
       ],
@@ -1836,8 +1818,36 @@
           "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         }
       ],
-      "licensePomCoordinate": "com.google.guava:guava-parent:33.3.1-android",
-      "embeddedNoticeFiles": []
+      "licensePomCoordinate": "com.google.guava:guava-parent:33.4.0-android",
+      "embeddedNoticeFiles": [
+        {
+          "path": "META-INF/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "group": "com.google.guava",
+      "artifact": "guava",
+      "version": "33.7.2-android",
+      "artifactType": "jar",
+      "artifactSha256": "b949fe975a32421c1a2633c07a4f1578b462f2f467668aa0a4023c5ff7c4a808",
+      "licenseSpdx": [
+        "Apache-2.0"
+      ],
+      "licenseMetadata": [
+        {
+          "name": "Apache License, Version 2.0",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+      ],
+      "licensePomCoordinate": "com.google.guava:guava-parent:33.7.2-android",
+      "embeddedNoticeFiles": [
+        {
+          "path": "META-INF/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
     },
     {
       "group": "com.google.guava",
@@ -2135,9 +2145,9 @@
     {
       "group": "org.jsoup",
       "artifact": "jsoup",
-      "version": "1.22.1",
+      "version": "1.23.2",
       "artifactType": "jar",
-      "artifactSha256": "cfd3298d8720cddfb0545109ccc6ea0ef39eff7e9c40a10ad95c93a65f01c916",
+      "artifactSha256": "e9d8c856856680427f096d156f02a414289985c930998fcb519ce5be39b42003",
       "licenseSpdx": [
         "MIT"
       ],
@@ -2147,20 +2157,20 @@
           "url": "https://jsoup.org/license"
         }
       ],
-      "licensePomCoordinate": "org.jsoup:jsoup:1.22.1",
+      "licensePomCoordinate": "org.jsoup:jsoup:1.23.2",
       "embeddedNoticeFiles": [
         {
           "path": "META-INF/jsoup/LICENSE",
-          "sha256": "12f89090b34132ac86980044fba5f6d45cfbc02c1eb08e0b53a22b7cb40be446"
+          "sha256": "f5d724c5818010c61bff2e177f5b6452434bc054807522bf241940bca8b1d6b1"
         }
       ]
     },
     {
       "group": "org.jspecify",
       "artifact": "jspecify",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "artifactType": "jar",
-      "artifactSha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+      "artifactSha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
       "licenseSpdx": [
         "Apache-2.0"
       ],
@@ -2170,7 +2180,7 @@
           "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         }
       ],
-      "licensePomCoordinate": "org.jspecify:jspecify:1.0.0",
+      "licensePomCoordinate": "org.jspecify:jspecify:1.0.1",
       "embeddedNoticeFiles": []
     }
   ]

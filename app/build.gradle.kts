@@ -13,8 +13,8 @@ android {
         applicationId = "ru.pikatv"
         minSdk = 26
         targetSdk = 36
-        versionCode = 14
-        versionName = "0.4.3"
+        versionCode = 15
+        versionName = "0.4.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,7 +39,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/legalAssets"))
 }
+
+val syncLegalAssets by tasks.registering(Sync::class) {
+    from(rootProject.projectDir) {
+        include("LICENSE", "NOTICE.md", "DISCLAIMER.md", "PRIVACY.md", "AI_DISCLOSURE.md", "THIRD_PARTY_NOTICES.md", "licenses/**")
+    }
+    into(layout.buildDirectory.dir("generated/legalAssets/legal"))
+}
+tasks.named("preBuild").configure { dependsOn(syncLegalAssets) }
 
 kotlin {
     compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
@@ -62,7 +71,12 @@ dependencies {
     implementation("androidx.tv:tv-material:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("org.jsoup:jsoup:1.22.1")
+    implementation("org.jsoup:jsoup:1.23.2")
+    constraints {
+        implementation("com.google.guava:guava:33.7.2-android") {
+            because("Use the patched Android runtime dependency")
+        }
+    }
     implementation("io.coil-kt.coil3:coil-compose:3.4.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
     implementation("androidx.media3:media3-exoplayer:1.9.3")

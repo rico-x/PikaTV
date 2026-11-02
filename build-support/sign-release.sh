@@ -23,5 +23,8 @@ trap cleanup EXIT
 expected="$(sed -n 's/.*"signerSha256": *"\([0-9a-f]*\)".*/\1/p' build-support/release-config.json)"
 actual="$("$build_tools/apksigner" verify --print-certs "$output_dir/$apk" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
 [[ -n "$expected" && "$actual" == "$expected" ]] || { printf 'Unexpected signing certificate: %s\n' "$actual" >&2; exit 1; }
-(cd "$output_dir" && sha256sum "$apk" > SHA256SUMS)
+version="$(node build-support/release-tools.mjs version)"
+docs="pikatv-v$version-docs.zip"
+python3 build-support/package-docs.py "$output_dir" "$version"
+(cd "$output_dir" && sha256sum "$apk" "$docs" > SHA256SUMS)
 node build-support/release-tools.mjs verify-assets "$output_dir"

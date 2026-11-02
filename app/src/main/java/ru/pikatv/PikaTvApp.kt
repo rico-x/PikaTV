@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.pikatv.domain.*
 import ru.pikatv.feature.account.LoginScreen
+import ru.pikatv.feature.about.LicensesDialog
 import ru.pikatv.feature.comments.CommentsScreen
 import ru.pikatv.feature.feed.FeedScreen
 import ru.pikatv.feature.images.ImageViewer
@@ -157,6 +158,8 @@ private fun SettingsScreen(state: AppState, vm: PikaViewModel) {
     val scheme = LocalTvColors.current.scheme
     val firstFocus = remember { FocusRequester() }
     var keyChoice by remember { mutableStateOf<KeyChoice?>(null) }
+    var licenses by remember { mutableStateOf(false) }
+    if (licenses) LicensesDialog(p.textScale) { licenses = false }
     LaunchedEffect(Unit) { firstFocus.requestFocus() }
     keyChoice?.let { choice -> TrackedDialog(onDismissRequest = { keyChoice = null }, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnBackPress = false, dismissOnClickOutside = false)) {
         RemoteKeyCapture(choice.title, { code ->
@@ -196,6 +199,7 @@ private fun SettingsScreen(state: AppState, vm: PikaViewModel) {
             TvAction("Импортировать настройки из аккаунта", { vm.refreshAccount() })
         } }
         item { Text("Импорт не меняет сайт и сохраняет настройки этого телевизора. Сортировка комментариев из импорта пока не применяется.", color = TvMuted, fontSize = 12.sp, lineHeight = 16.sp) }
+        item { TvAction("О приложении и лицензии", { licenses = true }) }
     }
 }
 
