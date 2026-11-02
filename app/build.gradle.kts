@@ -29,6 +29,7 @@ android {
         create("benchmark") {
             initWith(getByName("release"))
             applicationIdSuffix = ".bench"
+            resValue("string", "app_name", "PikaTV (проверка)")
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += "release"
         }
