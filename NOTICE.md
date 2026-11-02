@@ -2,7 +2,7 @@
 
 Copyright © 2026 rico-x. Оригинальный код и документация проекта предоставляются под [MIT](LICENSE) в пределах прав предоставляющих их лиц. Сторонние компоненты, изображения и материалы сайта сохраняют собственные условия.
 
-Формат рейтингов и некоторые настройки исследованы по [Pikabu Return Minus](https://github.com/PyXiion/Pikabu-Return-Minus), Copyright © 2023 PyXiion, MIT. [Исходное уведомление и лицензия](licenses/Pikabu-Return-Minus-MIT.txt) сохранены.
+Источник сведений о формате рейтингов и настройках Pikabu — [Pikabu Return Minus](https://github.com/PyXiion/Pikabu-Return-Minus), Copyright © 2023 PyXiion, MIT. [Исходное уведомление и лицензия](licenses/Pikabu-Return-Minus-MIT.txt) сохранены.
 
 В приложении используются AndroidX/Compose/Media3, Kotlin, kotlinx.coroutines, OkHttp, Okio, Coil, jsoup и транзитивные компоненты. Для Public Suffix List, поставляемого в OkHttp, применяется отдельная MPL-2.0. Полный перечень условий и вложенных данных — в [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), тексты — в [licenses/](licenses/README.md).
 
