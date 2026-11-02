@@ -33,6 +33,8 @@ jobs:
       - name: Verify release tooling and the site
         run: |
           node --test build-support/*.test.mjs
+          python3 -m unittest discover -s build-support -p 'test_package_docs.py'
+          python3 build-support/package-docs.py build/docs "$(node build-support/release-tools.mjs version)"
           for script in build-support/*.sh; do bash -n "$script"; done
           shellcheck build-support/*.sh
           node build-support/build-pages.mjs build

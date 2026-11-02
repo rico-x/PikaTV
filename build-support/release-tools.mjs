@@ -16,6 +16,7 @@ export function parseVersion(gradle) {
 
 export const version = () => parseVersion(readFileSync(new URL('app/build.gradle.kts', root), 'utf8'));
 export const apkName = v => `pikatv-v${v}.apk`;
+export const docsName = v => `pikatv-v${v}-docs.zip`;
 
 /** The release build leaves exactly one unsigned APK; CI signs that file and nothing else. */
 export function unsignedApk(dir) {
@@ -27,10 +28,11 @@ export function unsignedApk(dir) {
 
 /** Checks the APK against SHA256SUMS, so a release holds exactly the scanned file. */
 export function verifyAssets(dir, v = version()) {
-  const expected = [apkName(v), 'SHA256SUMS'];
+  const files = [apkName(v), docsName(v)];
+  const expected = [...files, 'SHA256SUMS'];
   assert.deepEqual(readdirSync(dir).sort(), [...expected].sort());
-  const sum = createHash('sha256').update(readFileSync(join(dir, expected[0]))).digest('hex');
-  assert.equal(readFileSync(join(dir, 'SHA256SUMS'), 'utf8'), `${sum}  ${expected[0]}\n`);
+  const sums = files.map(file => `${createHash('sha256').update(readFileSync(join(dir, file))).digest('hex')}  ${file}\n`).join('');
+  assert.equal(readFileSync(join(dir, 'SHA256SUMS'), 'utf8'), sums);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

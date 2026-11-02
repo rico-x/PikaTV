@@ -1,6 +1,6 @@
 {
-  "appVersion": "0.4.3",
-  "capturedOn": "2026-11-01",
+  "appVersion": "0.4.4",
+  "capturedOn": "2026-11-02",
   "session": "guest",
   "images": [
     {
@@ -15,7 +15,9 @@
         "url": "https://pikabu.ru/story/_14482332",
         "title": "Как оборониться от пикабушника",
         "author": "Squama911"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "feed-dark.png",
@@ -29,7 +31,9 @@
         "url": "https://pikabu.ru/story/_14481803",
         "title": "Мяско вкусное)))",
         "author": "PreveD2RazA"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "feed-light.png",
@@ -43,7 +47,9 @@
         "url": "https://pikabu.ru/story/_14481803",
         "title": "Мяско вкусное)))",
         "author": "PreveD2RazA"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "image-dark.png",
@@ -57,7 +63,9 @@
         "url": "https://pikabu.ru/story/_14481803",
         "title": "Мяско вкусное)))",
         "author": "PreveD2RazA"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "login-light.png",
@@ -67,7 +75,9 @@
       "theme": "Светлая",
       "textScalePercent": 100,
       "columnWidthPercent": 100,
-      "sourcePost": null
+      "sourcePost": null,
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "menu-dark.png",
@@ -81,7 +91,9 @@
         "url": "https://pikabu.ru/story/_14481803",
         "title": "Мяско вкусное)))",
         "author": "PreveD2RazA"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "player-dark.png",
@@ -95,7 +107,9 @@
         "url": "https://pikabu.ru/story/_14482332",
         "title": "Как оборониться от пикабушника",
         "author": "Squama911"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "reactions-dark.png",
@@ -109,7 +123,9 @@
         "url": "https://pikabu.ru/story/_14481803",
         "title": "Мяско вкусное)))",
         "author": "PreveD2RazA"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "reader-dark.png",
@@ -123,7 +139,9 @@
         "url": "https://pikabu.ru/story/_14481803",
         "title": "Мяско вкусное)))",
         "author": "PreveD2RazA"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "settings-dark.png",
@@ -133,7 +151,9 @@
       "theme": "Хвойная",
       "textScalePercent": 100,
       "columnWidthPercent": 100,
-      "sourcePost": null
+      "sourcePost": null,
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "settings-light.png",
@@ -143,7 +163,9 @@
       "theme": "Светлая",
       "textScalePercent": 100,
       "columnWidthPercent": 100,
-      "sourcePost": null
+      "sourcePost": null,
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
     },
     {
       "file": "video-post-dark.png",
@@ -157,7 +179,33 @@
         "url": "https://pikabu.ru/story/_14482332",
         "title": "Как оборониться от пикабушника",
         "author": "Squama911"
-      }
+      },
+      "appVersion": "0.4.3",
+      "capturedOn": "2026-11-01"
+    },
+    {
+      "file": "licenses-dark.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "0f99936f309e07643f0207886a3e357e46f0a4feda069a61bbcb7df3f2d1a350",
+      "theme": "Хвойная",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": null,
+      "appVersion": "0.4.4",
+      "capturedOn": "2026-11-02"
+    },
+    {
+      "file": "licenses-light.png",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "726fa2c8cbfe12708d65cd7c7e3778ed256770c17930399206f9c96fcbf62593",
+      "theme": "Светлая",
+      "textScalePercent": 100,
+      "columnWidthPercent": 100,
+      "sourcePost": null,
+      "appVersion": "0.4.4",
+      "capturedOn": "2026-11-02"
     }
   ]
 }

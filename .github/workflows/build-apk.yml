@@ -10,6 +10,10 @@ on:
         description: Build, sign and scan only; publish nothing
         type: boolean
         default: true
+      expected_apk_sha256:
+        description: SHA-256 of the signed APK accepted before publication (required unless dry_run)
+        type: string
+        default: ''
       virustotal_max_malicious:
         description: VirusTotal detections to accept; raise only for a false positive checked by hand
         type: number
@@ -30,6 +34,11 @@ jobs:
         env:
           RELEASE_REF: ${{ github.ref }}
         run: test "$RELEASE_REF" = refs/heads/main
+      - name: Publication requires the checked candidate
+        if: ${{ !inputs.dry_run }}
+        env:
+          EXPECTED_SHA256: ${{ inputs.expected_apk_sha256 }}
+        run: '[[ "$EXPECTED_SHA256" =~ ^[0-9a-f]{64}$ ]]'
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
@@ -82,6 +91,16 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: bash build-support/sign-release.sh unsigned-apk dist
+      - name: Match the checked signed APK
+        if: ${{ !inputs.dry_run }}
+        env:
+          EXPECTED_SHA256: ${{ inputs.expected_apk_sha256 }}
+        run: |
+          actual="$(sha256sum dist/*.apk | awk '{print $1}')"
+          if [[ "$actual" != "$EXPECTED_SHA256" ]]; then
+            echo '::error::The APK differs from the checked candidate; publication is blocked.'
+            exit 1
+          fi
       - name: Delete temporary private key
         if: always()
         run: rm -f -- "$RUNNER_TEMP/pikatv-release.p12"
