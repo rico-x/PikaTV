@@ -8,17 +8,22 @@ const clean = { malicious: 0, suspicious: 0, undetected: 60, harmless: 0 };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 
 /** A fake API with a clock: records requests, answers from small tables. */
-function fakeApi({ known = {}, analyses = {}, rateLimited = 0 } = {}) {
+function fakeApi({ known = {}, analyses = {}, rateLimited = 0, conflict = false, reportAfter = null, analysisMissing = 0, uploadBody } = {}) {
   let clock = 0;
   const calls = [];
   let limit = rateLimited;
+  let missing = analysisMissing;
   const reply = (status, body) => ({ status, ok: status < 300, json: async () => body });
   const fetch = async (url, init = {}) => {
     calls.push({ at: clock, method: init.method ?? 'GET', path: url.replace('https://www.virustotal.com/api/v3', ''), key: init.headers['x-apikey'] });
     if (limit > 0) { limit--; return reply(429, {}); }
     const [, kind, id] = url.split('/api/v3')[1].split('/');
-    if (kind === 'files' && init.method === 'POST') return reply(200, { data: { id: `analysis-${calls.length}` } });
-    if (kind === 'files') return known[id] ? reply(200, { data: { attributes: { last_analysis_date: 1, last_analysis_stats: known[id] } } }) : reply(404, {});
+    if (kind === 'files' && init.method === 'POST') return conflict ? reply(409, {}) : reply(200, uploadBody ?? { data: { id: `analysis-${calls.length}` } });
+    if (kind === 'files') {
+      const stats = known[id] ?? (reportAfter !== null && clock >= reportAfter ? clean : null);
+      return stats ? reply(200, { data: { attributes: { last_analysis_date: 1, last_analysis_stats: stats } } }) : reply(404, {});
+    }
+    if (missing-- > 0) return reply(404, {});
     const queue = analyses[id] ?? [clean];
     if (queue.length > 1) { queue.shift(); return reply(200, { data: { attributes: { status: 'queued' } } }); }
     return reply(200, { data: { attributes: { status: 'completed', stats: queue[0] } } });
@@ -63,6 +68,59 @@ test('a scan without real results never passes as clean', () => {
   const table = markdown([{ file: 'a.apk', sha256: 'a'.repeat(64), stats: { failure: 76 } }]);
   assert.match(table, /проверка не завершена/);
   assert.doesNotMatch(table, /чисто/);
+});
+
+test('a just-uploaded analysis may be missing before it is indexed', async () => {
+  const api = fakeApi({ analysisMissing: 1 });
+  const results = await scan([{ file: 'a.apk', bytes: Buffer.from('new apk') }], createClient({ apiKey: 'k', ...api }),
+    { now: api.now, log: () => {} });
+  assert.equal(results[0].stats, clean);
+  assert.equal(api.calls.filter(c => c.path.startsWith('/analyses/')).length, 2);
+  assert.ok(api.calls.filter(c => c.path.startsWith('/files/')).every(c => c.path === `/files/${sha(Buffer.from('new apk'))}`));
+});
+
+test('an existing pending upload is awaited by its exact hash, without repeated uploads', async () => {
+  const bytes = Buffer.from('pending apk');
+  const api = fakeApi({ conflict: true, reportAfter: 90_000 });
+  const results = await scan([{ file: 'a.apk', bytes }], createClient({ apiKey: 'k', ...api }),
+    { now: api.now, log: () => {} });
+  assert.equal(results[0].stats, clean);
+  assert.equal(api.calls.filter(c => c.method === 'POST').length, 1);
+  assert.equal(api.calls.filter(c => c.path.startsWith('/analyses/')).length, 0);
+  assert.ok(api.calls.filter(c => c.method === 'GET').every(c => c.path === `/files/${sha(bytes)}`));
+});
+
+test('a missing analysis can be completed through the report for the uploaded bytes', async () => {
+  const api = fakeApi({ analysisMissing: 100, reportAfter: 90_000 });
+  const results = await scan([{ file: 'a.apk', bytes: Buffer.from('a') }], createClient({ apiKey: 'k', ...api }),
+    { now: api.now, log: () => {} });
+  assert.equal(results[0].stats, clean);
+});
+
+test('missing analyses and pending conflicts fail closed at the deadline', async () => {
+  for (const options of [{ conflict: true }, { analysisMissing: 100 }]) {
+    const api = fakeApi(options);
+    await assert.rejects(scan([{ file: 'a.apk', bytes: Buffer.from('a') }], createClient({ apiKey: 'k', ...api }),
+      { now: api.now, timeoutMs: 120_000, log: () => {} }), /did not finish in time/);
+    assert.ok(api.now() >= 120_000 && api.now() < 180_000);
+  }
+});
+
+test('authentication failures and malformed uploads do not become pending scans', async () => {
+  const api = fakeApi();
+  const denied = createClient({ apiKey: 'k', ...api, fetch: async () => ({ status: 401, ok: false }) });
+  await assert.rejects(scan([{ file: 'a.apk', bytes: Buffer.from('a') }], denied, { now: api.now, log: () => {} }), /HTTP 401/);
+  const malformed = fakeApi({ uploadBody: { data: {} } });
+  await assert.rejects(scan([{ file: 'a.apk', bytes: Buffer.from('a') }], createClient({ apiKey: 'k', ...malformed }),
+    { now: malformed.now, log: () => {} }), /no analysis ID/);
+});
+
+test('analysis IDs are URL encoded before querying', async () => {
+  const api = fakeApi({ uploadBody: { data: { id: 'analysis/a+b=' } } });
+  const results = await scan([{ file: 'a.apk', bytes: Buffer.from('a') }], createClient({ apiKey: 'k', ...api }),
+    { now: api.now, log: () => {} });
+  assert.equal(results[0].stats, clean);
+  assert.ok(api.calls.some(c => c.path === '/analyses/analysis%2Fa%2Bb%3D'));
 });
 
 test('engines count only finished scans and the rest are named', () => {

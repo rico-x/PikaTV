@@ -54,16 +54,16 @@ export function createClient({ apiKey, fetch = globalThis.fetch, sleep, now = Da
       await sleep(60_000);  // quota exceeded: the minute window has to pass
     }
   }
-  async function json(path, init, allow404 = false) {
+  async function json(path, init, pendingStatuses = []) {
     const response = await request(path, init);
-    if (allow404 && response.status === 404) return null;
+    if (pendingStatuses.includes(response.status)) return null;
     assert.ok(response.ok, `VirusTotal ${init?.method ?? 'GET'} ${path.split('/')[1]} failed: HTTP ${response.status}`);
     return response.json();
   }
   return {
     /** The latest finished analysis of a known file, or null. */
     async lookup(sha256) {
-      const body = await json(`/files/${sha256}`, undefined, true);
+      const body = await json(`/files/${sha256}`, undefined, [404]);
       const attributes = body?.data?.attributes;
       return attributes?.last_analysis_date ? attributes.last_analysis_stats : null;
     },
@@ -71,13 +71,26 @@ export function createClient({ apiKey, fetch = globalThis.fetch, sleep, now = Da
       assert.ok(bytes.length <= MAX_UPLOAD_BYTES, `${name} is larger than the direct upload limit`);
       const form = new FormData();
       form.append('file', new Blob([bytes]), name);
-      return (await json('/files', { method: 'POST', body: form })).data.id;
+      // A previous upload can already exist before its finished report is available.
+      const body = await json('/files', { method: 'POST', body: form }, [409]);
+      if (body === null) return null;
+      const id = body?.data?.id;
+      assert.ok(typeof id === 'string' && id.length, 'VirusTotal upload returned no analysis ID');
+      return id;
     },
     /** Polls until the analysis finishes; null if it is still queued at the deadline. */
-    async analysis(id, deadline) {
+    async analysis(id, deadline, sha256) {
       while (now() < deadline) {
-        const attributes = (await json(`/analyses/${id}`)).data.attributes;
-        if (attributes.status === 'completed') return attributes.stats;
+        const body = id === null ? null : await json(`/analyses/${encodeURIComponent(id)}`, undefined, [404]);
+        if (body !== null) {
+          const attributes = body.data.attributes;
+          if (attributes.status === 'completed') return attributes.stats;
+        } else if (sha256) {
+          // A newly created analysis may not be indexed yet. Only a finished
+          // report for these exact bytes can replace the missing analysis.
+          const stats = await this.lookup(sha256);
+          if (stats) return stats;
+        }
         await sleep(30_000);
       }
       return null;
@@ -101,7 +114,7 @@ export async function scan(files, client, { now = Date.now, timeoutMs = 25 * 60_
     }
   }
   for (const item of pending) {
-    const stats = await client.analysis(item.id, deadline);
+    const stats = await client.analysis(item.id, deadline, item.sha256);
     assert.ok(stats, `${item.file}: VirusTotal did not finish in time; nothing is published unscanned`);
     results.push({ file: item.file, sha256: item.sha256, stats });
   }
