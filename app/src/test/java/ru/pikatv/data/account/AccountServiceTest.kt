@@ -40,6 +40,18 @@ class AccountServiceTest {
         } finally { outside.shutdown() }
     }
 
+    @Test fun sessionRenewedByRedirectIsKeptForTheNextRequest() = runBlocking {
+        var cookie = "remember=old"
+        val service = AccountService(cookieProvider = { cookie }, baseUrl = server.url("/").toString(),
+            cookieSink = { _, cookies -> cookie = cookies.joinToString("; ") { it.substringBefore(';') } })
+        server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/settings").addHeader("Set-Cookie", "session=new; path=/"))
+        server.enqueue(MockResponse().setHeader("Content-Type", "text/html")
+            .setBody(Buffer().write(settingsPage("Читатель").toByteArray(charset("windows-1251")))))
+        assertEquals("Читатель", service.readSettings().displayName)
+        assertEquals("remember=old", server.takeRequest().getHeader("Cookie"))
+        assertEquals("session=new", server.takeRequest().getHeader("Cookie"))
+    }
+
     @Test fun loginRedirectAndForbiddenRequireSignIn() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/login?next=/settings"))
         assertKind(ContentError.AUTH_REQUIRED) { service().readSettings() }

@@ -1,4 +1,4 @@
-PikaTV 0.4.4 - notices from resolved runtime artifacts.
+PikaTV 0.4.5 - notices from resolved runtime artifacts.
 Original upstream license and notice texts follow; identical texts are grouped by SHA-256.
 
 ========================================================================

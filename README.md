@@ -2,7 +2,7 @@
 
 Неофициальный клиент Pikabu для **Android TV и Google TV**. Лента, посты, комментарии и видео с обычного пульта, без рекламной оболочки сайта.
 
-Текущая версия исходников — **0.4.4**. Статус публикации APK — в [GitHub Releases](https://github.com/rico-x/PikaTV/releases). [Руководство пользователя](docs/USER_GUIDE.md) · [Установка](docs/INSTALL.md) · [Поддержка](SUPPORT.md).
+Текущая версия исходников — **0.4.5**. Статус публикации APK — в [GitHub Releases](https://github.com/rico-x/PikaTV/releases). [Руководство пользователя](docs/USER_GUIDE.md) · [Установка](docs/INSTALL.md) · [Поддержка](SUPPORT.md).
 
 ![Лента PikaTV в тёмной теме](docs/images/feed-dark.png)
 

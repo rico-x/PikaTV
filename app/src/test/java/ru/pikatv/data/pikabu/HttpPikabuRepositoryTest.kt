@@ -262,6 +262,44 @@ class HttpPikabuRepositoryTest {
         } finally { outside.shutdown() }
     }
 
+    @Test fun sessionRenewedByRedirectIsKeptForTheNextRequest() = runBlocking {
+        val jar = linkedMapOf("remember" to "old")
+        val kept = mutableListOf<String>()
+        repository = HttpPikabuRepository(cookieProvider = { jar.entries.joinToString("; ") { "${it.key}=${it.value}" } },
+            cookieSink = { _, cookies -> cookies.forEach { kept += it; it.substringBefore(';').split('=', limit = 2).let { (name, value) -> jar[name] = value } } },
+            baseUrl = server.url("/").toString())
+        // The site renews an expired session by sending new cookies with a redirect to the same page.
+        server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/?page=1")
+            .addHeader("Set-Cookie", "session=new; path=/; HttpOnly").addHeader("Set-Cookie", "remember=rotated; path=/"))
+        server.enqueue(html(fixture("mixed.html")))
+        assertTrue(repository.getFeed(FeedType.HOT).items.isNotEmpty())
+        assertEquals("remember=old", server.takeRequest().getHeader("Cookie"))
+        assertEquals("remember=rotated; session=new", server.takeRequest().getHeader("Cookie"))
+        assertEquals(listOf("session=new; path=/; HttpOnly", "remember=rotated; path=/"), kept)
+    }
+
+    @Test fun guestKeepsNoCookies() = runBlocking {
+        val kept = mutableListOf<String>()
+        repository = HttpPikabuRepository(cookieSink = { _, cookies -> kept += cookies }, baseUrl = server.url("/").toString())
+        server.enqueue(MockResponse().setResponseCode(301).setHeader("Location", "/").addHeader("Set-Cookie", "visitor=1"))
+        server.enqueue(html(fixture("mixed.html")).addHeader("Set-Cookie", "visitor=2"))
+        assertTrue(repository.getFeed(FeedType.HOT).items.isNotEmpty())
+        assertTrue(kept.isEmpty())
+        assertNull(server.takeRequest().getHeader("Cookie"))
+    }
+
+    @Test fun responseOfAReplacedSessionKeepsNoCookies() = runBlocking {
+        val kept = mutableListOf<String>()
+        repository = HttpPikabuRepository(cookieProvider = { "remember=old" }, cookieSink = { _, cookies -> kept += cookies },
+            baseUrl = server.url("/").toString())
+        server.enqueue(html(fixture("mixed.html")).addHeader("Set-Cookie", "remember=rotated").setHeadersDelay(1, TimeUnit.SECONDS))
+        val feed = async(Dispatchers.IO) { repository.getFeed(FeedType.HOT) }
+        withContext(Dispatchers.IO) { assertNotNull(server.takeRequest(3, TimeUnit.SECONDS)) }
+        repository.invalidateSession()
+        feed.await()
+        assertTrue(kept.isEmpty())
+    }
+
     @Test fun coroutineCancellationCancelsTransport() = runBlocking {
         server.enqueue(html(fixture("mixed.html")).setHeadersDelay(5, TimeUnit.SECONDS))
         val job = async { repository.getFeed(FeedType.HOT) }
