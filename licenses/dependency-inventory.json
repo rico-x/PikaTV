@@ -1,6 +1,6 @@
 {
-  "appVersion": "0.4.4",
-  "appVersionCode": 15,
+  "appVersion": "0.4.5",
+  "appVersionCode": 16,
   "configuration": "releaseRuntimeClasspath",
   "scope": "Resolved runtime artifacts before R8; not a complete post-shrink APK SBOM or build/test dependency inventory.",
   "generatedOn": "2026-11-02",

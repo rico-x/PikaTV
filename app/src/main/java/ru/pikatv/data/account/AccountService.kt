@@ -19,6 +19,7 @@ class AccountService(
     private val cookieProvider: (String) -> String?,
     client: OkHttpClient = OkHttpClient.Builder().callTimeout(25, TimeUnit.SECONDS).build(),
     baseUrl: String = "https://pikabu.ru/",
+    private val cookieSink: (String, List<String>) -> Unit = { _, _ -> },
 ) {
     // Redirects are followed explicitly: OkHttp keeps a manual Cookie header on cross-host redirects.
     private val client = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
@@ -28,8 +29,10 @@ class AccountService(
         var url = base.resolve("/settings")!!
         repeat(MAX_REDIRECTS + 1) {
             val request = Request.Builder().url(url).header("User-Agent", "Mozilla/5.0 (Linux; Android 16; PikaTV) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36")
-            cookieProvider(url.toString())?.takeIf { it.isNotBlank() }?.let { request.header("Cookie", it) }
+            val session = cookieProvider(url.toString())?.takeIf { it.isNotBlank() }?.also { request.header("Cookie", it) }
             client.newCall(request.build()).execute().use { response ->
+                // A renewed session arrives with a redirect; the next request must carry it, not the expired one.
+                if (session != null) response.headers("Set-Cookie").takeIf { it.isNotEmpty() }?.let { cookieSink(url.toString(), it) }
                 if (response.isRedirect) {
                     url = redirectTarget(url, response.header("Location"))
                     return@repeat

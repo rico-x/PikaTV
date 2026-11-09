@@ -15,6 +15,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import ru.pikatv.domain.*
 
+private const val SIGNED_OUT = "Вы вышли из аккаунта. Локальные данные сохранены."
+
 /** Votes and reactions against a recording fake: what is sent, what is shown, and in which order answers arrive. */
 @RunWith(AndroidJUnit4::class)
 class VoteStateTest {
@@ -218,7 +220,8 @@ class VoteStateTest {
             repo.comments = listOf(repo.comments.single().copy(vote = 0, reactions = listOf(repo.heart)))
             model.signOut()
         }
-        await { repo.invalidations == 1 && repo.commentLoads >= 2 && !model.state.value.commentsLoading }
+        await { model.state.value.message == SIGNED_OUT && repo.commentLoads >= 2 && !model.state.value.commentsLoading }
+        assertTrue(repo.invalidations > 0)
         assertEquals(0, model.state.value.comments.single().vote)
         assertFalse(model.state.value.comments.single().reactions.single().active)
     }
@@ -229,10 +232,12 @@ class VoteStateTest {
             model.vote(repo.card, 1)
             model.signOut()
         }
-        await { repo.invalidations == 1 }
+        // Sign-out drops the session before the cookies are gone, so only its message marks the end.
+        await { model.state.value.message == SIGNED_OUT }
+        assertTrue(repo.invalidations > 0)
         main { repo.gate!!.complete(Unit) }
         assertEquals(0, card.vote)
-        assertEquals("Вы вышли из аккаунта. Локальные данные сохранены.", model.state.value.message)
+        assertEquals(SIGNED_OUT, model.state.value.message)
     }
 
     private class RecordingRepository : PikabuRepository {

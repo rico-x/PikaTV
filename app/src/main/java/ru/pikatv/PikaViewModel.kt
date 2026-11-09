@@ -51,9 +51,18 @@ data class AppState(
 fun AppState.isCollapsed(post: Post): Boolean = post.id !in expandedIds &&
     (post.id in collapsedIds || preferences.collapsePostsByDefault)
 
+private fun pikabuCookies(url: String): String? = CookieManager.getInstance().getCookie(url)
+
+/** Keeps cookies Pikabu sets in its responses, as the WebView itself would, so a renewed session replaces the expired one. */
+private fun keepPikabuCookies(url: String, cookies: List<String>) {
+    val manager = CookieManager.getInstance()
+    cookies.forEach { manager.setCookie(url, it) }
+    manager.flush()
+}
+
 class PikaViewModel(
     application: Application,
-    private val repository: PikabuRepository = HttpPikabuRepository(cookieProvider = { url -> CookieManager.getInstance().getCookie(url) }),
+    private val repository: PikabuRepository = HttpPikabuRepository(cookieProvider = ::pikabuCookies, cookieSink = ::keepPikabuCookies),
     private val loadInitialFeed: Boolean = true,
 ) : AndroidViewModel(application) {
     private val store = LocalStore(application)
@@ -68,7 +77,7 @@ class PikaViewModel(
     private var commentsJob: Job? = null
     private data class VoteRequest(val session: Long, var job: Job? = null)
     private val votingIds = mutableMapOf<String, VoteRequest>()
-    private var sessionGeneration = 0L
+    @Volatile private var sessionGeneration = 0L
     // Only one full-post read runs at a time. Its flags outlive a POST completed before this GET.
     private class PostRead(val id: String, var voteChanged: Boolean, var reactionsChanged: Boolean)
     private var postRead: PostRead? = null
@@ -356,7 +365,9 @@ class PikaViewModel(
     fun refreshAccount(importSettings: Boolean = true, quiet: Boolean = false) = viewModelScope.launch {
         mutableState.update { it.copy(accountBusy = true, message = null) }
         try {
-            val account = AccountService(cookieProvider = { url -> CookieManager.getInstance().getCookie(url) }).readSettings()
+            val generation = sessionGeneration
+            val account = AccountService(cookieProvider = ::pikabuCookies,
+                cookieSink = { url, cookies -> if (generation == sessionGeneration) keepPikabuCookies(url, cookies) }).readSettings()
             val preferences = if (importSettings) store.importPreferences(account.settingsJson) else mutableState.value.preferences
             val signedIn = mutableState.value.accountName != account.displayName
             mutableState.update { it.copy(accountName = account.displayName, preferences = preferences, accountBusy = false, message = if (quiet) null else "Аккаунт подключён${if (importSettings) ", настройки импортированы" else ""}") }
@@ -368,6 +379,9 @@ class PikaViewModel(
     }
 
     fun signOut() {
+        // Responses still in flight belong to the old session: their cookies must not return after the removal.
+        sessionGeneration++
+        repository.invalidateSession()
         CookieManager.getInstance().removeAllCookies {
             CookieManager.getInstance().flush()
             mutableState.update { it.copy(accountName = null, message = "Вы вышли из аккаунта. Локальные данные сохранены.") }

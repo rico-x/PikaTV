@@ -13,11 +13,13 @@ import java.nio.charset.Charset
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-/** Website adapter: reads content, and writes only votes. Cookies are supplied per request and never persisted here. */
+/** Website adapter: reads content, and writes only votes. Cookies come from the app's store per request and are never
+ *  persisted here; cookies Pikabu sets in its own responses go back to that store through [cookieSink], as a browser keeps them. */
 class HttpPikabuRepository(
     client: OkHttpClient = OkHttpClient(),
     private val cookieProvider: (String) -> String? = { null },
     baseUrl: String = "https://pikabu.ru/",
+    private val cookieSink: (String, List<String>) -> Unit = { _, _ -> },
 ) : PikabuRepository {
     // Redirects are followed explicitly so a Pikabu cookie can never reach an external host.
     private val client = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
@@ -217,6 +219,7 @@ class HttpPikabuRepository(
 
     private suspend fun request(target: HttpUrl, body: RequestBody? = null, referer: String? = null, requiresAccount: Boolean = false, csrfToken: String? = null): PageResponse {
         var url = target
+        val generation = sessionGeneration
         repeat(6) {
             val builder = Request.Builder().url(url).header("User-Agent", "Mozilla/5.0 (Linux; Android) PikaTV/0.1")
                 .header("Accept", if (body == null) "text/html" else "application/json")
@@ -224,7 +227,7 @@ class HttpPikabuRepository(
             referer?.let { builder.header("Referer", it) }
             csrfToken?.let { builder.header("X-Csrf-Token", it) }
             if (body != null) builder.post(body).header("X-Requested-With", "XMLHttpRequest")
-            val response = execute(builder.build(), requiresAccount)
+            val response = execute(builder.build(), requiresAccount, generation)
             val redirect = response.redirect ?: return response
             val next = url.resolve(redirect)
             if (next == null || !sameOrigin(next)) throw PikabuException(ContentError.CONTENT_UNAVAILABLE, "Внешнее перенаправление не поддерживается")
@@ -235,7 +238,7 @@ class HttpPikabuRepository(
         throw PikabuException(ContentError.NETWORK, "Слишком много перенаправлений")
     }
 
-    private suspend fun execute(request: Request, requiresAccount: Boolean): PageResponse = suspendCancellableCoroutine { continuation ->
+    private suspend fun execute(request: Request, requiresAccount: Boolean, generation: Long): PageResponse = suspendCancellableCoroutine { continuation ->
         val call = client.newCall(request)
         continuation.invokeOnCancellation { call.cancel() }
         call.enqueue(object : Callback {
@@ -245,6 +248,12 @@ class HttpPikabuRepository(
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val result = response.use {
+                        // An expired session is renewed by a redirect to the same page with new cookies: without
+                        // keeping them every retry repeats the old ones. Only an existing session is renewed, so a
+                        // guest stays without cookies, and a response of a replaced session keeps nothing.
+                        val cookies = it.headers("Set-Cookie")
+                        if (cookies.isNotEmpty() && it.request.header("Cookie") != null && sameOrigin(it.request.url) && generation == sessionGeneration)
+                            cookieSink(it.request.url.toString(), cookies)
                         if (it.code in listOf(301, 302, 303, 307, 308)) {
                             val location = it.header("Location") ?: throw PikabuException(ContentError.SCHEMA_CHANGED, "Перенаправление без адреса")
                             return@use PageResponse("", it.request.url.toString(), location)
